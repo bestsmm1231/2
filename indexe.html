@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coupon Hub • Jaipur Deals 2026</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: rgba(255,255,255,0.7);
+      --text: #0f172a;
+      --text-light: #64748b;
+      --shadow: 0 8px 32px rgba(31,38,135,0.12);
+      --border: 1px solid rgba(255,255,255,0.3);
+      --radius: 20px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: rgba(30,41,59,0.6);
+      --text: #e2e8f0;
+      --text-light: #94a3b8;
+      --shadow: 0 8px 32px rgba(0,0,0,0.45);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.5rem 1rem 5rem;
+      transition: background .4s, color .4s;
+    }
+
+    header { text-align:center; margin:0 auto 2.8rem; max-width:420px; }
+    h1 {
+      font-size: clamp(1.9rem, 7vw, 2.8rem);
+      background: linear-gradient(135deg, #c026d3, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .theme-toggle {
+      position:fixed; top:1rem; right:1rem;
+      background:var(--card-bg); border:var(--border);
+      backdrop-filter:blur(12px);
+      color:var(--text);
+      width:48px; height:48px; border-radius:50%;
+      font-size:1.3rem; cursor:pointer;
+      display:grid; place-items:center;
+      box-shadow:var(--shadow); z-index:999;
+      transition:transform .25s;
+    }
+    .theme-toggle:hover { transform:scale(1.08); }
+
+    .grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:1.8rem;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .coupon-card {
+      background:var(--card-bg);
+      backdrop-filter:blur(14px);
+      border:var(--border);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      transition:transform .35s ease, box-shadow .35s ease;
+    }
+    .coupon-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(0,0,0,0.18); }
+
+    .logo-area {
+      padding:clamp(1.2rem, 6vw, 1.8rem) 1rem;
+      text-align:center;
+      position:relative;
+    }
+
+    .brand-logo {
+      max-width:160px;
+      height:auto;
+      display:block;
+      margin:0 auto;
+    }
+
+    .brand {
+      color:white;
+      font-size:clamp(1.4rem, 5vw, 1.8rem);
+      font-weight:800;
+      margin:0.6rem 0 0.3rem;
+      text-shadow:0 1.5px 6px rgba(0,0,0,0.35);
+    }
+
+    .subtitle {
+      color:rgba(255,255,255,0.94);
+      font-size:clamp(0.9rem, 3.5vw, 1rem);
+      font-weight:500;
+    }
+
+    .offer {
+      background:rgba(255,255,255,0.92);
+      padding:clamp(0.9rem, 4vw, 1.1rem);
+      font-size:clamp(1.2rem, 5vw, 1.45rem);
+      font-weight:800;
+      color:#c026d3;
+      text-align:center;
+      border-bottom:1px solid rgba(200,38,211,0.18);
+    }
+    .offer span { font-size:1.3em; margin:0 0.35em; }
+
+    .meta {
+      padding:1rem 1.2rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:clamp(0.9rem, 3.2vw, 0.95rem);
+      color:var(--text-light);
+      border-bottom:1px solid rgba(226,232,240,0.4);
+    }
+
+    .used { font-weight:600; color:var(--text); }
+
+    .details-toggle {
+      color:#3b82f6;
+      font-weight:600;
+      cursor:pointer;
+      user-select:none;
+    }
+    .details-toggle:hover { text-decoration:underline; }
+
+    .details-content {
+      display:none;
+      padding:1rem 1.2rem;
+      background:rgba(255,255,255,0.4);
+      font-size:0.95rem;
+      color:var(--text-light);
+      border-bottom:1px solid rgba(226,232,240,0.4);
+    }
+    .details-content.show { display:block; }
+
+    .details-content ul {
+      list-style:none;
+      padding-left:0;
+    }
+    .details-content li {
+      padding:0.4rem 0;
+      position:relative;
+      padding-left:1.5rem;
+    }
+    .details-content li::before {
+      content:"•";
+      color:#10b981;
+      position:absolute;
+      left:0;
+      font-size:1.2rem;
+    }
+
+    .action-btn {
+      background:#3b82f6;
+      color:white;
+      border:none;
+      width:100%;
+      padding:clamp(1rem, 4.5vw, 1.25rem);
+      font-size:clamp(1.05rem, 4.2vw, 1.18rem);
+      font-weight:700;
+      cursor:pointer;
+      min-height:52px;
+      transition:background .25s;
+    }
+    .action-btn:hover { background:#2563eb; }
+
+    /* Modal */
+    .modal {
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(6px);
+      z-index:1000;
+      align-items:center; justify-content:center;
+      padding:1rem;
+    }
+    .modal-content {
+      background:var(--card-bg);
+      border-radius:24px;
+      padding:2rem 1.6rem;
+      max-width:380px; width:100%;
+      text-align:center;
+      box-shadow:0 20px 50px rgba(0,0,0,0.4);
+      border:var(--border);
+      backdrop-filter:blur(10px);
+      position:relative;
+    }
+    .close-btn {
+      position:absolute; top:12px; right:16px;
+      font-size:2rem; color:var(--text-light);
+      cursor:pointer;
+    }
+    #modal-title { font-size:1.4rem; font-weight:700; margin-bottom:0.8rem; color:#c026d3; }
+    #modal-amount { font-size:1.1rem; color:var(--text-light); margin-bottom:1.4rem; }
+    #modal-qr { background:white; padding:16px; border-radius:16px; margin:0 auto 1.4rem; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .copy-btn {
+      background:#3b82f6; color:white; border:none;
+      padding:0.9rem 1.8rem; border-radius:12px;
+      cursor:pointer; font-weight:600; margin-top:0.8rem;
+      transition:background .2s;
+    }
+    .copy-btn:hover { background:#2563eb; }
+
+    footer { text-align:center; margin-top:4rem; color:var(--text-light); font-size:0.9rem; }
+
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">🌙</button>
+
+  <header>
+    <h1>Coupon Hub</h1>
+    <p>Jaipur's Best Deals • ₹50 per bundle • Instant UPI QR</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- Flipkart -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #3874d8, #f16529);">
+        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/7/71/The_Flipkart_Logo_-_from_Official_Website.png" alt="Flipkart Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Flipkart';">
+        <div class="brand">Flipkart</div>
+        <div class="subtitle">Mega Savings</div>
+      </div>
+      <div class="offer">
+        <span>🔥</span> UP TO 90% OFF <span>💥</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 9,500+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>Up to 90% OFF on Electronics & Fashion</li>
+          <li>80%+ OFF Clothing & Accessories</li>
+          <li>15–25% OFF Flights & Hotels</li>
+          <li>Extra 10% Bank Discounts</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('Flipkart Bundle', 50)">GET CODE</button>
+    </div>
+
+    <!-- Amazon -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #131921, #232f3e);">
+        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Amazon';">
+        <div class="brand">Amazon</div>
+        <div class="subtitle">Prime Deals</div>
+      </div>
+      <div class="offer">
+        <span>💎</span> UP TO 90% OFF <span>🔥</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 18,000+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>Up to 90% OFF sitewide (electronics, fashion, home)</li>
+          <li>30–50% OFF Handbags, Clothing & Kitchen</li>
+          <li>Extra ₹100–300 off first order / Prime exclusives</li>
+          <li>Bank offers + instant discounts</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('Amazon Bundle', 50)">GET CODE</button>
+    </div>
+
+    <!-- Myntra -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #ff3f6c, #ff527b);">
+        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Myntra_logo.png" alt="Myntra Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Myntra';">
+        <div class="brand">Myntra</div>
+        <div class="subtitle">Style & Fashion</div>
+      </div>
+      <div class="offer">
+        <span>👗</span> FLAT ₹800–2000 OFF <span>✨</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 7,200+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>Flat ₹800–2000 OFF on Apparel & Accessories</li>
+          <li>Up to 80% OFF on Top Brands</li>
+          <li>Extra 10–20% OFF on select categories</li>
+          <li>Free shipping + easy returns</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('Myntra Bundle', 50)">GET CODE</button>
+    </div>
+
+    <!-- Zepto -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #7c3aed, #a78bfa);">
+        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/en/7/7d/Logo_of_Zepto.png" alt="Zepto Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Zepto';">
+        <div class="brand">Zepto</div>
+        <div class="subtitle">10-min Magic</div>
+      </div>
+      <div class="offer">
+        <span>⚡</span> 95% OFF + ₹50 CB <span>✨</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 4,200+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>Up to 95% OFF sitewide + Cashback</li>
+          <li>₹150–200 OFF first orders</li>
+          <li>30% OFF Groceries & Fruits</li>
+          <li>Fast delivery coupons</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('Zepto Bundle', 50)">GET CODE</button>
+    </div>
+
+    <!-- Meesho -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #ec4899, #f472b6);">
+        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Meesho_logo.png" alt="Meesho Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Meesho';">
+        <div class="brand">Meesho</div>
+        <div class="subtitle">Budget Queen</div>
+      </div>
+      <div class="offer">
+        <span>🛍️</span> UP TO 80% OFF <span>🌸</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 12,000+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>90% OFF Beauty & Personal Care</li>
+          <li>80%+ OFF Kurtis, Sarees, Dresses</li>
+          <li>60% OFF Accessories & Bags</li>
+          <li>Free shipping on most orders</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('Meesho Bundle', 50)">GET CODE</button>
+    </div>
+
+    <!-- JioMart -->
+    <div class="coupon-card">
+      <div class="logo-area" style="background:linear-gradient(135deg, #047857, #10b981);">
+        <img class="brand-logo" src="https://seeklogo.com/images/J/jiomart-logo-4E2E6A9A1E-seeklogo.com.png" alt="JioMart Logo" onerror="this.src='https://via.placeholder.com/160x60?text=JioMart';">
+        <div class="brand">JioMart</div>
+        <div class="subtitle">Grocery + Fashion</div>
+      </div>
+      <div class="offer">
+        <span>🛒</span> ₹100 OFF + 80% OFF <span>🥬</span>
+      </div>
+      <div class="meta">
+        <div class="used">Used 3,800+ times</div>
+        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
+      </div>
+      <div class="details-content">
+        <ul>
+          <li>80% OFF Fashion & Lifestyle</li>
+          <li>Flat ₹100–150 OFF Groceries</li>
+          <li>Up to 65% OFF Beauty & Care</li>
+          <li>Free delivery codes</li>
+        </ul>
+      </div>
+      <button class="action-btn" onclick="showModal('JioMart Bundle', 50)">GET CODE</button>
+    </div>
+
+  </div>
+
+  <!-- UPI Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h2 id="modal-title">Pay ₹50 to Unlock</h2>
+      <p id="modal-amount">Scan QR or copy link</p>
+      <div id="modal-qr"></div>
+      <button class="copy-btn" id="copyUpiBtn">Copy UPI Link</button>
+      <p style="margin-top:1.4rem; font-size:0.95rem; color:var(--text-light);">
+        After payment send screenshot to:<br>
+        <strong>yourname@example.com</strong> or WhatsApp
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    Replace <code>yourupi@okhdfcbank</code> in script with your real UPI ID • Codes from Feb 2026 trends • Jaipur local
+  </footer>
+
+  <script>
+    // Theme toggle
+    const themeBtn = document.getElementById('themeBtn');
+    const html = document.documentElement;
+    function setTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+    const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(saved);
+    themeBtn.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+
+    // Details toggle
+    function toggleDetails(el) {
+      const content = el.parentElement.nextElementSibling;
+      content.classList.toggle('show');
+      el.textContent = content.classList.contains('show') ? 'Hide Details ▲' : 'See Details ▼';
+    }
+
+    // Modal + QR
+    const modal = document.getElementById('paymentModal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalAmount = document.getElementById('modal-amount');
+    const qrContainer = document.getElementById('modal-qr');
+    const copyBtn = document.getElementById('copyUpiBtn');
+    let currentUpi = '';
+
+    function showModal(bundle, amount) {
+      qrContainer.innerHTML = '';
+      modalTitle.textContent = bundle;
+      modalAmount.textContent = `Pay ₹${amount} to unlock`;
+
+      const upiId = "yourupi@okhdfcbank"; // ← CHANGE THIS TO YOUR REAL UPI ID
+      const merchant = "Coupon Hub Jaipur";
+      const note = bundle.replace(/\s+/g, "%20");
+      currentUpi = `upi://pay?pa=${upiId}&pn=${merchant}&am=${amount}&cu=INR&tn=${note}`;
+
+      new QRCode(qrContainer, {
+        text: currentUpi,
+        width: 220,
+        height: 220,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      qrContainer.innerHTML = '';
+    }
+
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(currentUpi).then(() => {
+        copyBtn.textContent = "Copied ✓";
+        setTimeout(() => copyBtn.textContent = "Copy UPI Link", 2200);
+      }).catch(() => alert("Copy failed – long-press QR instead."));
+    });
+  </script>
+
+</body>
+</html>
