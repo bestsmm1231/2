@@ -1,470 +1,413 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coupon Hub • Jaipur Deals 2026</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card-bg: rgba(255,255,255,0.7);
-      --text: #0f172a;
-      --text-light: #64748b;
-      --shadow: 0 8px 32px rgba(31,38,135,0.12);
-      --border: 1px solid rgba(255,255,255,0.3);
-      --radius: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbo - Shop & Resell Like Meesho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+		
+        /* HERO SLIDER */
+        .hero-slider {
+            position: relative;
+            height: 420px;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(236,72,153,0.8), rgba(168,85,247,0.8));
+        }
+        .product-card { transition: all 0.3s; cursor: pointer; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        #qrcode, #paymentQrcode, #cartQrcode { background: white; padding: 12px; border-radius: 12px; }
+        .category-link {
+            color: #4b5563;
+            padding-bottom: 0.25rem;
+            transition: color 0.2s ease, border-bottom 0.2s ease;
+        }
+        .category-link:hover { color: #ec4899; }
+        .category-link.active {
+            color: #ec4899 !important;
+            border-bottom: 2px solid #ec4899;
+        }
+        .cod-disabled { opacity: 0.5; pointer-events: none; background-color: #f3f4f6 !important; border-color: #d1d5db !important; }
+        .cod-note { font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem; text-align: center; }
+        .trust-badge { background: #f0fdf4; color: #166534; font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 9999px; border: 1px solid #86efac; }
+        .similar-grid { display: flex; overflow-x: auto; gap: 1rem; padding-bottom: 1rem; scrollbar-width: thin; }
+        .similar-grid::-webkit-scrollbar { height: 6px; }
+        .similar-grid::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 9999px; }
+        .logo-container { width: 40px; height: 40px; border-radius: 16px; overflow: hidden; flex-shrink: 0; background: #f3f4f6; }
+        .logo-container img { width: 100%; height: 100%; object-fit: cover; }
 
-    [data-theme="dark"] {
-      --bg: #0f172a;
-      --card-bg: rgba(30,41,59,0.6);
-      --text: #e2e8f0;
-      --text-light: #94a3b8;
-      --shadow: 0 8px 32px rgba(0,0,0,0.45);
-    }
-
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 1.5rem 1rem 5rem;
-      transition: background .4s, color .4s;
-    }
-
-    header { text-align:center; margin:0 auto 2.8rem; max-width:420px; }
-    h1 {
-      font-size: clamp(1.9rem, 7vw, 2.8rem);
-      background: linear-gradient(135deg, #c026d3, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 800;
-    }
-
-    .theme-toggle {
-      position:fixed; top:1rem; right:1rem;
-      background:var(--card-bg); border:var(--border);
-      backdrop-filter:blur(12px);
-      color:var(--text);
-      width:48px; height:48px; border-radius:50%;
-      font-size:1.3rem; cursor:pointer;
-      display:grid; place-items:center;
-      box-shadow:var(--shadow); z-index:999;
-      transition:transform .25s;
-    }
-    .theme-toggle:hover { transform:scale(1.08); }
-
-    .grid {
-      display:grid;
-      grid-template-columns:1fr;
-      gap:1.8rem;
-      max-width:1200px;
-      margin:0 auto;
-    }
-
-    .coupon-card {
-      background:var(--card-bg);
-      backdrop-filter:blur(14px);
-      border:var(--border);
-      border-radius:var(--radius);
-      overflow:hidden;
-      box-shadow:var(--shadow);
-      transition:transform .35s ease, box-shadow .35s ease;
-    }
-    .coupon-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(0,0,0,0.18); }
-
-    .logo-area {
-      padding:clamp(1.2rem, 6vw, 1.8rem) 1rem;
-      text-align:center;
-      position:relative;
-    }
-
-    .brand-logo {
-      max-width:160px;
-      height:auto;
-      display:block;
-      margin:0 auto;
-    }
-
-    .brand {
-      color:white;
-      font-size:clamp(1.4rem, 5vw, 1.8rem);
-      font-weight:800;
-      margin:0.6rem 0 0.3rem;
-      text-shadow:0 1.5px 6px rgba(0,0,0,0.35);
-    }
-
-    .subtitle {
-      color:rgba(255,255,255,0.94);
-      font-size:clamp(0.9rem, 3.5vw, 1rem);
-      font-weight:500;
-    }
-
-    .offer {
-      background:rgba(255,255,255,0.92);
-      padding:clamp(0.9rem, 4vw, 1.1rem);
-      font-size:clamp(1.2rem, 5vw, 1.45rem);
-      font-weight:800;
-      color:#c026d3;
-      text-align:center;
-      border-bottom:1px solid rgba(200,38,211,0.18);
-    }
-    .offer span { font-size:1.3em; margin:0 0.35em; }
-
-    .meta {
-      padding:1rem 1.2rem;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:clamp(0.9rem, 3.2vw, 0.95rem);
-      color:var(--text-light);
-      border-bottom:1px solid rgba(226,232,240,0.4);
-    }
-
-    .used { font-weight:600; color:var(--text); }
-
-    .details-toggle {
-      color:#3b82f6;
-      font-weight:600;
-      cursor:pointer;
-      user-select:none;
-    }
-    .details-toggle:hover { text-decoration:underline; }
-
-    .details-content {
-      display:none;
-      padding:1rem 1.2rem;
-      background:rgba(255,255,255,0.4);
-      font-size:0.95rem;
-      color:var(--text-light);
-      border-bottom:1px solid rgba(226,232,240,0.4);
-    }
-    .details-content.show { display:block; }
-
-    .details-content ul {
-      list-style:none;
-      padding-left:0;
-    }
-    .details-content li {
-      padding:0.4rem 0;
-      position:relative;
-      padding-left:1.5rem;
-    }
-    .details-content li::before {
-      content:"•";
-      color:#10b981;
-      position:absolute;
-      left:0;
-      font-size:1.2rem;
-    }
-
-    .action-btn {
-      background:#3b82f6;
-      color:white;
-      border:none;
-      width:100%;
-      padding:clamp(1rem, 4.5vw, 1.25rem);
-      font-size:clamp(1.05rem, 4.2vw, 1.18rem);
-      font-weight:700;
-      cursor:pointer;
-      min-height:52px;
-      transition:background .25s;
-    }
-    .action-btn:hover { background:#2563eb; }
-
-    /* Modal */
-    .modal {
-      display:none;
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.7);
-      backdrop-filter:blur(6px);
-      z-index:1000;
-      align-items:center; justify-content:center;
-      padding:1rem;
-    }
-    .modal-content {
-      background:var(--card-bg);
-      border-radius:24px;
-      padding:2rem 1.6rem;
-      max-width:380px; width:100%;
-      text-align:center;
-      box-shadow:0 20px 50px rgba(0,0,0,0.4);
-      border:var(--border);
-      backdrop-filter:blur(10px);
-      position:relative;
-    }
-    .close-btn {
-      position:absolute; top:12px; right:16px;
-      font-size:2rem; color:var(--text-light);
-      cursor:pointer;
-    }
-    #modal-title { font-size:1.4rem; font-weight:700; margin-bottom:0.8rem; color:#c026d3; }
-    #modal-amount { font-size:1.1rem; color:var(--text-light); margin-bottom:1.4rem; }
-    #modal-qr { background:white; padding:16px; border-radius:16px; margin:0 auto 1.4rem; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-    .copy-btn {
-      background:#3b82f6; color:white; border:none;
-      padding:0.9rem 1.8rem; border-radius:12px;
-      cursor:pointer; font-weight:600; margin-top:0.8rem;
-      transition:background .2s;
-    }
-    .copy-btn:hover { background:#2563eb; }
-
-    footer { text-align:center; margin-top:4rem; color:var(--text-light); font-size:0.9rem; }
-
-    @media (min-width: 640px) {
-      .grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
-    }
-  </style>
+        /* Carousel styles for featured categories */
+        .cat-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #fce7f3;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+        }
+        .cat-circle:hover {
+            transform: scale(1.1);
+            border-color: #ec4899;
+            box-shadow: 0 6px 16px rgba(236,72,153,0.3);
+        }
+        .cat-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cat-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            scrollbar-width: thin;
+        }
+        .cat-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .cat-scroll::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 9999px;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800">
 
-  <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">🌙</button>
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="logo-container">
+                    <img src="https://image2url.com/r2/default/images/1773746149025-ae387d75-7cb7-44d1-ba43-c8792cbf0ec0.webp" alt="Carbo Logo">
+                </div>
+                <h1 class="text-3xl font-bold text-pink-600 tracking-tighter">Meesho</h1>
+            </div>
+            <div class="flex-1 max-w-xl mx-8 hidden md:block">
+                <div class="relative">
+                    <input id="searchInput" type="text" placeholder="Search kurtis, sarees, jewellery..."
+                           class="w-full bg-gray-100 border border-gray-200 rounded-3xl py-3 px-6 text-sm focus:outline-none focus:border-pink-500">
+                    <i class="fa fa-search absolute right-5 top-3.5 text-gray-400"></i>
+                </div>
+            </div>
+            <div class="flex items-center gap-6 text-2xl">
+                <div onclick="toggleCart()" class="relative cursor-pointer">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">0</span>
+                </div>
+                <i class="fa fa-user-circle cursor-pointer"></i>
+            </div>
+        </div>
+    </nav>
 
-  <header>
-    <h1>Coupon Hub</h1>
-    <p>Jaipur's Best Deals • ₹50 per bundle • Instant UPI QR</p>
-  </header>
-
-  <div class="grid">
-
-    <!-- Flipkart -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #3874d8, #f16529);">
-        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/7/71/The_Flipkart_Logo_-_from_Official_Website.png" alt="Flipkart Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Flipkart';">
-        <div class="brand">Flipkart</div>
-        <div class="subtitle">Mega Savings</div>
-      </div>
-      <div class="offer">
-        <span>🔥</span> UP TO 90% OFF <span>💥</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 9,500+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>Up to 90% OFF on Electronics & Fashion</li>
-          <li>80%+ OFF Clothing & Accessories</li>
-          <li>15–25% OFF Flights & Hotels</li>
-          <li>Extra 10% Bank Discounts</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('Flipkart Bundle', 50)">GET CODE</button>
+    <!-- CATEGORIES -->
+    <div class="bg-white border-b sticky top-14 z-40 overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex gap-8 text-sm font-medium whitespace-nowrap">
+            <a href="#" onclick="filterCategory('all', this)" class="category-link active">All</a>
+            <a href="#" onclick="filterCategory('women', this)" class="category-link">Women Ethnic</a>
+            <a href="#" onclick="filterCategory('men', this)" class="category-link">Men</a>
+            <a href="#" onclick="filterCategory('kids', this)" class="category-link">Kids</a>
+            <a href="#" onclick="filterCategory('home', this)" class="category-link">Home & Kitchen</a>
+            <a href="#" onclick="filterCategory('beauty', this)" class="category-link">Beauty</a>
+        </div>
     </div>
 
-    <!-- Amazon -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #131921, #232f3e);">
-        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Amazon';">
-        <div class="brand">Amazon</div>
-        <div class="subtitle">Prime Deals</div>
-      </div>
-      <div class="offer">
-        <span>💎</span> UP TO 90% OFF <span>🔥</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 18,000+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>Up to 90% OFF sitewide (electronics, fashion, home)</li>
-          <li>30–50% OFF Handbags, Clothing & Kitchen</li>
-          <li>Extra ₹100–300 off first order / Prime exclusives</li>
-          <li>Bank offers + instant discounts</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('Amazon Bundle', 50)">GET CODE</button>
+    <!-- 🔥 HERO SLIDER -->
+<div class="hero-slider">
+
+    <!-- Slides -->
+    <div class="slide active" style="background-image:url('https://image2url.com/r2/default/images/1773749553408-4aa21065-8ec3-4c1a-9cc5-cb77afe02cb3.webp')"></div>
+    <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1521335629791-ce4aec67dd53?w=1600')"></div>
+    <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1585386959984-a41552231658?w=1600')"></div>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
+        <h2 class="text-5xl font-bold mb-3">Shop • Resell • Earn</h2>
+        <p class="text-xl opacity-90">Just like Meesho but 100% static & UPI/COD only</p>
+        <button onclick="window.scrollTo({top: 700, behavior: 'smooth'})"
+            class="mt-8 bg-white text-pink-600 px-10 py-4 rounded-3xl font-semibold text-lg">
+            Start Shopping
+        </button>
     </div>
 
-    <!-- Myntra -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #ff3f6c, #ff527b);">
-        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Myntra_logo.png" alt="Myntra Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Myntra';">
-        <div class="brand">Myntra</div>
-        <div class="subtitle">Style & Fashion</div>
-      </div>
-      <div class="offer">
-        <span>👗</span> FLAT ₹800–2000 OFF <span>✨</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 7,200+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>Flat ₹800–2000 OFF on Apparel & Accessories</li>
-          <li>Up to 80% OFF on Top Brands</li>
-          <li>Extra 10–20% OFF on select categories</li>
-          <li>Free shipping + easy returns</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('Myntra Bundle', 50)">GET CODE</button>
+</div>
+
+    <!-- TRUST BADGES -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
+            <div class="grid grid-cols-3 gap-4 text-center text-sm md:text-base font-medium">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="text-3xl">♻️</div>
+                    <p class="text-green-700 font-semibold">7 Days Easy Return</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 border-l border-r border-gray-200">
+                    <div class="text-3xl">💰</div>
+                    <p class="text-emerald-700 font-semibold">Cash on Delivery</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="text-3xl">🏆</div>
+                    <p class="text-amber-700 font-semibold">Lowest Prices</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Zepto -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #7c3aed, #a78bfa);">
-        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/en/7/7d/Logo_of_Zepto.png" alt="Zepto Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Zepto';">
-        <div class="brand">Zepto</div>
-        <div class="subtitle">10-min Magic</div>
-      </div>
-      <div class="offer">
-        <span>⚡</span> 95% OFF + ₹50 CB <span>✨</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 4,200+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>Up to 95% OFF sitewide + Cashback</li>
-          <li>₹150–200 OFF first orders</li>
-          <li>30% OFF Groceries & Fruits</li>
-          <li>Fast delivery coupons</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('Zepto Bundle', 50)">GET CODE</button>
+    <!-- FEATURED CATEGORIES CAROUSEL -->
+    <div class="max-w-7xl mx-auto px-4 py-8 bg-white rounded-2xl shadow-sm mb-8">
+        <div class="cat-scroll">
+            <div class="flex flex-col items-center text-center min-w-[110px]">
+                <div class="cat-circle">
+                    <img src="data:image/webp;base64,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" alt="Ethnic Wear">
+                </div>
+                <p class="mt-3 text-sm font-medium text-gray-800">Ethnic Wear</p>
+            </div>
+            <div class="flex flex-col items-center text-center min-w-[110px]">
+                <div class="cat-circle">
+                    <img src="https://images.unsplash.com/photo-1621184455862-c163dfb30e0f?w=300" alt="Western Dresses">
+                </div>
+                <p class="mt-3 text-sm font-medium text-gray-800">Western Dresses</p>
+            </div>
+            <div class="flex flex-col items-center text-center min-w-[110px]">
+                <div class="cat-circle">
+                    <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300" alt="Menswear">
+                </div>
+                <p class="mt-3 text-sm font-medium text-gray-800">Menswear</p>
+            </div>
+            <div class="flex flex-col items-center text-center min-w-[110px]">
+                <div class="cat-circle">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=300" alt="Footwear">
+                </div>
+                <p class="mt-3 text-sm font-medium text-gray-800">Footwear</p>
+            </div>
+            <div class="flex flex-col items-center text-center min-w-[110px]">
+                <div class="cat-circle">
+                    <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300" alt="Home Decor">
+                </div>
+                <p class="mt-3 text-sm font-medium text-gray-800">Home Decor</p>
+            </div>
+          
+               
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Meesho -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #ec4899, #f472b6);">
-        <img class="brand-logo" src="https://upload.wikimedia.org/wikipedia/commons/3/33/Meesho_logo.png" alt="Meesho Logo" onerror="this.src='https://via.placeholder.com/160x60?text=Meesho';">
-        <div class="brand">Meesho</div>
-        <div class="subtitle">Budget Queen</div>
-      </div>
-      <div class="offer">
-        <span>🛍️</span> UP TO 80% OFF <span>🌸</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 12,000+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>90% OFF Beauty & Personal Care</li>
-          <li>80%+ OFF Kurtis, Sarees, Dresses</li>
-          <li>60% OFF Accessories & Bags</li>
-          <li>Free shipping on most orders</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('Meesho Bundle', 50)">GET CODE</button>
+    <!-- PRODUCTS GRID -->
+    <div class="max-w-7xl mx-auto px-4 py-10">
+        <h2 class="text-3xl font-semibold mb-8 flex items-center gap-3">
+            Trending Products
+            <span class="text-pink-600 text-sm font-normal">(Static Demo)</span>
+        </h2>
+        <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
     </div>
 
-    <!-- JioMart -->
-    <div class="coupon-card">
-      <div class="logo-area" style="background:linear-gradient(135deg, #047857, #10b981);">
-        <img class="brand-logo" src="https://seeklogo.com/images/J/jiomart-logo-4E2E6A9A1E-seeklogo.com.png" alt="JioMart Logo" onerror="this.src='https://via.placeholder.com/160x60?text=JioMart';">
-        <div class="brand">JioMart</div>
-        <div class="subtitle">Grocery + Fashion</div>
-      </div>
-      <div class="offer">
-        <span>🛒</span> ₹100 OFF + 80% OFF <span>🥬</span>
-      </div>
-      <div class="meta">
-        <div class="used">Used 3,800+ times</div>
-        <span class="details-toggle" onclick="toggleDetails(this)">See Details ▼</span>
-      </div>
-      <div class="details-content">
-        <ul>
-          <li>80% OFF Fashion & Lifestyle</li>
-          <li>Flat ₹100–150 OFF Groceries</li>
-          <li>Up to 65% OFF Beauty & Care</li>
-          <li>Free delivery codes</li>
-        </ul>
-      </div>
-      <button class="action-btn" onclick="showModal('JioMart Bundle', 50)">GET CODE</button>
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="productDetailModal" class="hidden fixed inset-0 bg-white z-[200] overflow-y-auto">
+        <div class="max-w-5xl mx-auto px-4 py-8">
+            <div class="flex justify-between items-center mb-8 sticky top-0 bg-white z-10 pb-4 border-b">
+                <button onclick="closeProductDetail()" class="text-3xl text-gray-700 hover:text-black">
+                    <i class="fa fa-arrow-left"></i>
+                </button>
+                <h2 class="text-2xl font-bold">Product Details</h2>
+                <div></div>
+            </div>
+            <div id="productDetailContent"></div>
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold mb-6">Similar Products</h3>
+                <div id="similarProducts" class="similar-grid"></div>
+            </div>
+        </div>
     </div>
 
-  </div>
+    <script>
+        // ALL 15 PRODUCTS – fully restored
+        let products = [
+            { id:1, name:"Pink Floral Kurti with Mirror Work", price:299, original:599, category:"women",
+              img:"https://picsum.photos/id/1015/500/700",
+              description:"Soft cotton kurti with beautiful mirror embroidery. Comfortable for daily wear and festive occasions.",
+              rating:4.3, reviews:1284, supplier:"Verified Supplier • Jaipur", returnPolicy:"7 Days Return Available" },
+            { id:2, name:"Blue Georgette Saree with Blouse", price:449, original:999, category:"women",
+              img:"https://picsum.photos/id/201/500/700",
+              description:"Lightweight georgette saree with rich border work. Comes with matching blouse piece.",
+              rating:4.6, reviews:942, supplier:"Verified Supplier • Surat", returnPolicy:"7 Days Return Available" },
+            { id:3, name:"Men's Slim Fit Cotton Shirt", price:399, original:799, category:"men",
+              img:"https://picsum.photos/id/29/500/700",
+              description:"Breathable cotton shirt, slim fit, wrinkle resistant. Perfect for office and casual.",
+              rating:4.1, reviews:673, supplier:"Verified Supplier • Tirupur", returnPolicy:"7 Days Return Available" },
+            { id:4, name:"Kids Party Wear Frock", price:249, original:499, category:"kids",
+              img:"https://picsum.photos/id/64/500/700",
+              description:"Cute party frock with net layering and embroidery. Comfortable lining.",
+              rating:4.4, reviews:451, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:5, name:"Stainless Steel Cookware Set (3 pcs)", price:599, original:1299, category:"home",
+              img:"https://picsum.photos/id/160/500/700",
+              description:"High quality stainless steel kadhai, tawa & spoon set. Induction compatible.",
+              rating:4.5, reviews:812, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:6, name:"Gold Plated Layered Necklace Set", price:199, original:499, category:"women",
+              img:"https://picsum.photos/id/201/500/700",
+              description:"Trendy gold plated necklace with earrings. Long lasting shine.",
+              rating:4.0, reviews:389, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:7, name:"Matte Lipstick Set (5 Shades)", price:149, original:399, category:"beauty",
+              img:"https://picsum.photos/id/251/500/700",
+              description:"Long lasting matte lipsticks. Hydrating formula, smudge proof.",
+              rating:4.2, reviews:1567, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:8, name:"Men's Stretchable Slim Jeans", price:549, original:1199, category:"men",
+              img:"https://picsum.photos/id/29/500/700",
+              description:"Comfort stretch denim jeans. Skinny fit, durable stitching.",
+              rating:4.3, reviews:934, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:9, name:"Leheriya Bandhej Saree", price:699, original:1499, category:"women",
+              img:"https://picsum.photos/id/1020/500/700",
+              description:"Traditional Rajasthani leheriya bandhej saree. Pure georgette.",
+              rating:4.7, reviews:521, supplier:"Verified Supplier • Jaipur", returnPolicy:"7 Days Return Available" },
+            { id:10, name:"Jaipuri Razai / Quilt (Double Bed)", price:899, original:1999, category:"home",
+              img:"https://picsum.photos/id/1060/500/700",
+              description:"Handmade Jaipuri razai. Soft cotton filling, beautiful print.",
+              rating:4.6, reviews:678, supplier:"Verified Supplier • Jaipur", returnPolicy:"7 Days Return Available" },
+            { id:11, name:"Cotton Handblock Printed Kurta for Men", price:459, original:899, category:"men",
+              img:"https://picsum.photos/id/1080/500/700",
+              description:"Traditional handblock print kurta. Pure cotton, breathable.",
+              rating:4.4, reviews:312, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:12, name:"Kundan Jhumka Earrings", price:249, original:599, category:"women",
+              img:"https://picsum.photos/id/1045/500/700",
+              description:"Beautiful kundan work jhumkas. Lightweight and elegant.",
+              rating:4.5, reviews:789, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:13, name:"Kids Ethnic Sherwani Set", price:599, original:1199, category:"kids",
+              img:"https://picsum.photos/id/65/500/700",
+              description:"Festive sherwani set for kids with turban.",
+              rating:4.3, reviews:245, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:14, name:"Anarkali Suit with Dupatta", price:799, original:1599, category:"women",
+              img:"https://picsum.photos/id/1018/500/700",
+              description:"Stylish anarkali suit with dupatta. Flared and elegant.",
+              rating:4.6, reviews:1342, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" },
+            { id:15, name:"Non-Stick Kadhai Set (3 pcs)", price:649, original:1299, category:"home",
+              img:"https://picsum.photos/id/162/500/700",
+              description:"Durable non-stick cookware set. Easy to clean.",
+              rating:4.4, reviews:567, supplier:"Verified Supplier", returnPolicy:"7 Days Return Available" }
+        ];
 
-  <!-- UPI Modal -->
-  <div id="paymentModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <h2 id="modal-title">Pay ₹50 to Unlock</h2>
-      <p id="modal-amount">Scan QR or copy link</p>
-      <div id="modal-qr"></div>
-      <button class="copy-btn" id="copyUpiBtn">Copy UPI Link</button>
-      <p style="margin-top:1.4rem; font-size:0.95rem; color:var(--text-light);">
-        After payment send screenshot to:<br>
-        <strong>yourname@example.com</strong> or WhatsApp
-      </p>
-    </div>
-  </div>
+        let cart = [];
 
-  <footer>
-    Replace <code>yourupi@okhdfcbank</code> in script with your real UPI ID • Codes from Feb 2026 trends • Jaipur local
-  </footer>
+        // Render products
+        function renderProducts(filtered = products) {
+            const grid = document.getElementById("productsGrid");
+            grid.innerHTML = "";
+            filtered.forEach(p => {
+                const discount = Math.round(((p.original - p.price) / p.original) * 100);
+                const card = document.createElement("div");
+                card.className = "product-card bg-white rounded-3xl overflow-hidden shadow";
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${p.img}" class="w-full h-64 object-cover">
+                        <span class="absolute top-3 right-3 bg-white text-pink-600 text-xs font-bold px-3 py-1 rounded-full shadow">${discount}% OFF</span>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-medium text-sm line-clamp-2 h-10">${p.name}</h4>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-xl font-bold">₹${p.price}</span>
+                            <span class="text-gray-400 line-through text-sm">₹${p.original}</span>
+                        </div>
+                        <div class="mt-2 flex items-center gap-1 text-sm text-yellow-500">
+                            <i class="fa fa-star"></i> ${p.rating}
+                        </div>
+                    </div>
+                `;
+                // IMPORTANT: This line makes the card clickable
+                card.addEventListener('click', () => openProductDetail(p.id));
+                grid.appendChild(card);
+            });
+        }
 
-  <script>
-    // Theme toggle
-    const themeBtn = document.getElementById('themeBtn');
-    const html = document.documentElement;
-    function setTheme(theme) {
-      html.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
-    const saved = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    setTheme(saved);
-    themeBtn.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+        // Open product detail
+        function openProductDetail(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return alert("Product not found");
 
-    // Details toggle
-    function toggleDetails(el) {
-      const content = el.parentElement.nextElementSibling;
-      content.classList.toggle('show');
-      el.textContent = content.classList.contains('show') ? 'Hide Details ▲' : 'See Details ▼';
-    }
+            const content = document.getElementById("productDetailContent");
+            content.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div>
+                        <img src="${p.img}" class="w-full rounded-2xl shadow-lg object-cover">
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold mb-4">${p.name}</h1>
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-4xl font-bold text-pink-600">₹${p.price}</span>
+                            <span class="text-xl text-gray-500 line-through">₹${p.original}</span>
+                            <span class="bg-pink-100 text-pink-700 px-4 py-1 rounded-full text-sm font-medium">${Math.round(((p.original - p.price)/p.original)*100)}% OFF</span>
+                        </div>
+                        <div class="flex flex-wrap gap-3 mb-8">
+                            <div class="trust-badge flex items-center gap-1"><i class="fa fa-sync"></i> ${p.returnPolicy}</div>
+                            <div class="trust-badge flex items-center gap-1"><i class="fa fa-check-circle"></i> ${p.supplier}</div>
+                            <div class="trust-badge flex items-center gap-1"><i class="fa fa-star"></i> ${p.rating} • ${p.reviews}+ Ratings</div>
+                        </div>
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold mb-3">Description</h3>
+                            <p class="text-gray-700">${p.description}</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button class="flex-1 bg-pink-100 text-pink-700 py-4 rounded-2xl font-semibold">Add to Cart</button>
+                            <button class="flex-1 bg-pink-600 text-white py-4 rounded-2xl font-semibold">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-    // Modal + QR
-    const modal = document.getElementById('paymentModal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalAmount = document.getElementById('modal-amount');
-    const qrContainer = document.getElementById('modal-qr');
-    const copyBtn = document.getElementById('copyUpiBtn');
-    let currentUpi = '';
+            // Similar products
+            const similar = products.filter(x => x.category === p.category && x.id !== id).slice(0,8);
+            document.getElementById("similarProducts").innerHTML = similar.map(s => `
+                <div class="min-w-[180px] bg-white rounded-xl overflow-hidden shadow cursor-pointer" onclick="openProductDetail(${s.id})">
+                    <img src="${s.img}" class="w-full h-56 object-cover">
+                    <div class="p-3">
+                        <p class="font-medium text-sm line-clamp-2">${s.name}</p>
+                        <p class="text-pink-600 font-bold mt-1">₹${s.price}</p>
+                        <p class="text-xs text-gray-500 line-through">₹${s.original}</p>
+                    </div>
+                </div>
+            `).join('');
 
-    function showModal(bundle, amount) {
-      qrContainer.innerHTML = '';
-      modalTitle.textContent = bundle;
-      modalAmount.textContent = `Pay ₹${amount} to unlock`;
+            document.getElementById("productDetailModal").classList.remove("hidden");
+            document.body.style.overflow = 'hidden'; // prevent background scroll
+        }
 
-      const upiId = "yourupi@okhdfcbank"; // ← CHANGE THIS TO YOUR REAL UPI ID
-      const merchant = "Coupon Hub Jaipur";
-      const note = bundle.replace(/\s+/g, "%20");
-      currentUpi = `upi://pay?pa=${upiId}&pn=${merchant}&am=${amount}&cu=INR&tn=${note}`;
+        function closeProductDetail() {
+            document.getElementById("productDetailModal").classList.add("hidden");
+            document.body.style.overflow = '';
+        }
 
-      new QRCode(qrContainer, {
-        text: currentUpi,
-        width: 220,
-        height: 220,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
+        // Category filter
+        function filterCategory(cat, el) {
+            document.querySelectorAll('.category-link').forEach(a => a.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderProducts(cat === 'all' ? products : products.filter(p => p.category === cat));
+        }
 
-      modal.style.display = "flex";
-    }
-
-    function closeModal() {
-      modal.style.display = "none";
-      qrContainer.innerHTML = '';
-    }
-
-    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(currentUpi).then(() => {
-        copyBtn.textContent = "Copied ✓";
-        setTimeout(() => copyBtn.textContent = "Copy UPI Link", 2200);
-      }).catch(() => alert("Copy failed – long-press QR instead."));
-    });
-  </script>
-
+        window.onload = function() {
+            renderProducts();
+            document.querySelector('.category-link')?.classList.add('active');
+        };
+    </script>
 </body>
-
 </html>
